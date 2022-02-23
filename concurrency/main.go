@@ -53,3 +53,18 @@ func Turnout(InA, InB <-chan int, OutA, OutB chan<- int) {
 		}
 	}
 }
+
+func TurnoutWithQuit(Quit <-chan int, InA, InB <-chan int, OutA, OutB chan<- int) {
+	for {
+		select {
+		case data := <-InA:
+		case data := <-InB:
+		case <-Quit:
+			close(InA)
+			close(InB)
+			Fanout(InA, OutA, OutB)
+			Fanout(InB, OutA, OutB)
+			return
+		}
+	}
+}
